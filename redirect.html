@@ -2,23 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Strava Redirect</title>
+  <title>Strava Redirect Debug</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+  </style>
   <script>
-    // získa parametre z URL (code / error)
+    // získa parametre z URL (čo poslala Strava)
     const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    const error = params.get('error');
-    const errorDescription = params.get('error_description');
+    const code = params.get("code");
+    const error = params.get("error");
+    const errorDescription = params.get("error_description");
 
-    // vyrob deep link do appky
-    if (code) {
-      window.location.href = `coachpro://redirect?code=${code}`;
-    } else if (error) {
-      window.location.href = `coachpro://redirect?error=${error}&error_description=${encodeURIComponent(errorDescription)}`;
-    }
+    // zobraz debug info priamo na stránke
+    document.addEventListener("DOMContentLoaded", () => {
+      const debugBox = document.getElementById("debug");
+      debugBox.textContent = JSON.stringify(
+        {
+          code,
+          error,
+          errorDescription,
+          fullQuery: Object.fromEntries(params),
+        },
+        null,
+        2
+      );
+
+      // automatické presmerovanie späť do appky
+      if (code) {
+        setTimeout(() => {
+          window.location.href = `coachpro://redirect?code=${code}`;
+        }, 3000);
+      } else if (error) {
+        setTimeout(() => {
+          window.location.href = `coachpro://redirect?error=${error}&error_description=${encodeURIComponent(errorDescription)}`;
+        }, 3000);
+      }
+    });
   </script>
 </head>
 <body>
-  <p>Redirecting…</p>
+  <h2>Strava Redirect Debug</h2>
+  <p>Toto je odpoveď, ktorú posiela Strava:</p>
+  <pre id="debug">Loading…</pre>
+  <p>Ak je všetko v poriadku, za 3 sekundy ťa presmerujem späť do appky.</p>
 </body>
 </html>
